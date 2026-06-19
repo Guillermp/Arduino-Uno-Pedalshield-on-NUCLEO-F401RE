@@ -2,6 +2,10 @@
 
 Previously, I made my own PCB for the [Arduino Pedal Shild project](https://github.com/Guillermp/Modified-Arduino-Uno-Pedalshield) but found some limitations related to the memory of the Arduino UNO. This made me think I reached a dead end in the project. However, I came across the STM32 Nucleo boards and their compatibility with Arduino UNO shields. With more memory, I can implement memory-hungry effects, such as delay-based effects, giving me a solid test bed for developing real-time audio effects. :)
 
+<img src="PedalShield-STM32.jpeg" alt="Diagram" width="400">
+
+Figure 1: Picture of the working prototype.
+
 ---
 Problem: the Arduino UNO has only 2Kb SRAM so I cannot really implement effects that require a substantial amount of memory such as delay based effects. 
 
@@ -17,7 +21,7 @@ I'm planning to implement many different audio effects. For now I have implement
 
 <img src="NUCLEO-F401RE_pinout.png" alt="Diagram" width="400">
 
-Figure 1: Pinout mapping of the NUCLEO-F401RE.
+Figure 2: Pinout mapping of the NUCLEO-F401RE.
 
 
 
