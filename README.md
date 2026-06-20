@@ -16,6 +16,13 @@ Solution: using the NUCLEO-F401RE (96kb), and we can use the shield since it has
 
 I'm planning to implement many different audio effects. For now I have implemented a very simple delay with feedback. 
 
+<audio controls>
+  <source src="./Delay_demo_1.mp4" type="audio/mp4">
+  Your browser does not support the audio element.
+</audio>
+
+Audio 1: Delay demo.
+
 ---
 ## Pinout Mapping from Arduino UNO to NUCLEO-F401RE
 

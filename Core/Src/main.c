@@ -411,7 +411,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-#define BUFFER_SIZE 31000
+#define BUFFER_SIZE 13500
 
 uint16_t buffer[BUFFER_SIZE];
 
@@ -441,7 +441,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
         circ_bbuf_push(&circularBuffer, adc12 + feedbackGain*feedback);
 
         // Get the delayed sample
-        circ_bbuf_pop(&circularBuffer, &delayed_sample, BUFFER_SIZE/2);
+        circ_bbuf_pop(&circularBuffer, &delayed_sample, BUFFER_SIZE-1);
         feedback = delayed_sample;
 
         // Calculate the mixed signal
