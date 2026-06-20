@@ -16,10 +16,8 @@ Solution: using the NUCLEO-F401RE (96kb), and we can use the shield since it has
 
 I'm planning to implement many different audio effects. For now I have implemented a very simple delay with feedback. 
 
-<audio controls>
-  <source src="./Delay_demo_1.mp4" type="audio/mp4">
-  Your browser does not support the audio element.
-</audio>
+
+https://github.com/user-attachments/assets/81fc5124-9ff0-4c79-a4c8-31b656073043
 
 Audio 1: Delay demo.
 
