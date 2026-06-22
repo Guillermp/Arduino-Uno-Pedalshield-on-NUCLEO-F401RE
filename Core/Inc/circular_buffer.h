@@ -23,6 +23,6 @@ unsigned int circ_stored_samples(struct circ_bbuf_t *c);
 
 int circ_bbuf_push(struct circ_bbuf_t *c, uint16_t data);
 
-int circ_bbuf_pop(struct circ_bbuf_t *c, uint16_t *data, unsigned int delay_samples);
+int circ_bbuf_pop(struct circ_bbuf_t *c, uint16_t *data);
 
 #endif /* INC_CIRCULAR_BUFFER_H_ */

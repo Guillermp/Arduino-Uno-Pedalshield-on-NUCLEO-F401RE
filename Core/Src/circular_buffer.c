@@ -33,11 +33,11 @@ int circ_bbuf_push(struct circ_bbuf_t *c, uint16_t data)
     return 0;  // return success to indicate successful push.
 }
 
-int circ_bbuf_pop(struct circ_bbuf_t *c, uint16_t *data, unsigned int delay_samples)
+int circ_bbuf_pop(struct circ_bbuf_t *c, uint16_t *data)
 {
     int next;
 
-    if (c->head == c->tail || circ_stored_samples(c) < delay_samples)  // if the head == tail, we don't have any data
+    if (c->head == c->tail)  // if the head == tail, we don't have any data
         return -1;
 
     next = c->tail + 1;  // next is where tail will point to after this read.

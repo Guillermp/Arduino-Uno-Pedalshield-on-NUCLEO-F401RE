@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "circular_buffer.h"
+#include "delay.h"
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -65,6 +67,10 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+#define ADC_MIDPOINT 3189u  // measured idle value for your hardware
+struct DelayConfig delayConfig = {.Fs = 31000,.delay_samples = 0, .feedbackGain = 0.3f, .wetness = 0.5f, .midpoint = ADC_MIDPOINT};
+volatile uint16_t adc_display_value = 0;
+volatile uint8_t adc_ready = 0;
 
 /* USER CODE END 0 */
 
@@ -106,6 +112,12 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_ADC_Start_IT(&hadc1);
 
+  // Effect related
+  float delay_ms = 200.f;
+  delayInit(&delayConfig, delay_ms);
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -116,7 +128,15 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	      HAL_Delay(500);
+	  HAL_Delay(500);
+
+	  if (adc_ready)
+	      {
+	          adc_ready = 0;
+	          char buf[32];
+	          int len = snprintf(buf, sizeof(buf), "ADC: %u\r\n", adc_display_value);
+	          HAL_UART_Transmit(&huart2, (uint8_t*)buf, len, HAL_MAX_DELAY);
+	      }
   }
   /* USER CODE END 3 */
 }
@@ -411,42 +431,46 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-#define BUFFER_SIZE 13500
+#define BUFFER_SIZE 31000
 
 uint16_t buffer[BUFFER_SIZE];
 
-uint16_t feedback = 0;
-uint16_t feedbackGain = 0.1;
+volatile uint16_t feedback = 0;
 
 struct circ_bbuf_t circularBuffer = {buffer, 0, 0, BUFFER_SIZE};
+
+volatile uint32_t n = 0;
+
 // Digital delay with feedback
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     if (hadc->Instance == ADC1)
     {
-        static uint32_t n = 0;
-        static uint16_t delayed_sample = 0;
 
-        n++;
 
-        if (n >= 31343)   // roughly once per second
-        {
-            n = 0;
-            HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-        }
+
+
 
         uint16_t adc12 = HAL_ADC_GetValue(hadc);
 
-        // Save the sample in the circular buffer
-        circ_bbuf_push(&circularBuffer, adc12 + feedbackGain*feedback);
+        // ---- Debugging stuff ---- //
 
-        // Get the delayed sample
-        circ_bbuf_pop(&circularBuffer, &delayed_sample, BUFFER_SIZE-1);
-        feedback = delayed_sample;
+        n++;
 
-        // Calculate the mixed signal
-        uint16_t mixed = (adc12 + delayed_sample)/2;
+		if (n >= 31343)   // roughly once per second
+		{
+			n = 0;
+			adc_display_value = adc12;
+			adc_ready = 1;
 
+		}
+
+		// ---- --------------- ---- //
+
+
+
+		// Pass the signal though the effect
+        uint16_t mixed = delayProcessor(&circularBuffer, adc12, &feedback, &delayConfig);
 
         uint16_t output16 = mixed << 4;
 
